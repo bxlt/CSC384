@@ -1,1 +1,4 @@
+1. If underestimation happens, A* function expand to a node with lower cost but leads to longer route which compares to optimal path, and eventually reaches the goal. However it will discover a path with shorter distance and find the optimal eventually. 
+If overestimation happens, A* stoped when find a supoptimal path to the goal which missed some nodes on the optimal path. We need to make the algorithm discover more nodes on the optimal path.
 
+2. True. It's a four direction grid, Manhattan Distance never overestimate. 

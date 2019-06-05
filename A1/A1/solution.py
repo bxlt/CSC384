@@ -7,6 +7,7 @@
 #   You may not import or otherwise source any of your own files
 
 #import os for time functions
+import os
 from search import * #for search engines
 from lunarlockout import LunarLockoutState, Direction, lockout_goal_state #for LunarLockout specific classes and problems
 
@@ -77,11 +78,36 @@ def heur_alternate(state):
                 return float("inf")
     #state.print_path()
     result = myHures(state)
-    return 0
+    return result
 
 def myHures(state):
-    state.print_state()
-    return 0
+    roverDist = 0
+    i = 0
+    while i < len(state.xanadus):
+        j = i
+        curr = state.xanadus[i]
+        while j <len(state.xanadus):
+            following = state.xanadus[j]
+            if (curr[0]==following[0] or curr[1]==following[1]):
+                roverDist+=1
+            else:
+                roverDist+=2
+            j+=1
+        i+=1
+    boxDist = 0
+    a = 0
+    while a < len(state.xanadus):
+        b = a
+        curr = state.xanadus[a]
+        while b <len(state.robots):
+            following = state.robots[b]
+            if (curr[0]==following[0] or curr[1]==following[1]):
+                boxDist+=1
+            else:
+                boxDist+=2
+            b+=1
+        a+=1
+    return roverDist+boxDist
 
 def fval_function(sN, weight):
 #IMPLEMENT
