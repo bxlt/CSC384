@@ -58,6 +58,7 @@ def heur_alternate(state):
     '''INPUT: a lunar lockout state'''
     '''OUTPUT: a numeric value that serves as an estimate of the distance of the state to the goal.'''        
     # L distance ignores the box on the map and edge functions 
+    # My heuristic function compute the L distance between each rover and robots
     #Your function should return a numeric value for the estimate of the distance to the goal.
     if (len(state.xanadus)==0):
         return 0
