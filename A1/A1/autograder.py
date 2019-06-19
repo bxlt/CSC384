@@ -57,7 +57,8 @@ if test_L:
 
         s0 = PROBLEMS[i]
 
-        L_dist = heur_L_distance(s0)
+        #L_dist = heur_L_distance(s0)
+        L_dist = heur_manhattan_distance(s0)
         print('calculated L_dist:', str(L_dist))
         #To see state
         #print(s0.state_string())

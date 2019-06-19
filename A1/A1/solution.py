@@ -76,7 +76,7 @@ def heur_alternate(state):
             if (found==0):
                 return float("inf")
     #state.print_path()
-    result = myHures(state)
+    #result = myHures(state)
     return 0
 
 def myHures(state):
