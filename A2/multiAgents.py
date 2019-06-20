@@ -100,7 +100,7 @@ class ReflexAgent(Agent):
         if(nextFood==0):
           res = newPoints^2
         else:
-          res = newPoints+1/foodDistance 
+          res = 1/nextFood + newPoints + 1/foodDistance 
         return res
 
  
@@ -161,7 +161,57 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        maxMove = "" 
+        maxValue = -88888
+        index = 0
+        directions = gameState.getLegalActions()
+        while (index < len(directions)):
+          nextState = gameState.generatePacmanSuccessor(directions[index])
+          index+=1
+          currValue = self.minMax(1, 0, nextState)
+          if(currValue>=maxValue):
+            maxValue = currValue
+            maxMove = directions[index-1]
+        return maxMove
+
+    def minMax(self,index, depth, gameState):
+      '''(self, int,int,gameState)-> int
+        Return the current best action and move score'''
+        # terminal situation: reach end node or depth bound
+        currPots = self.evaluationFunction(gameState)
+        if (self.depth==depth):
+          return currPots
+        elif(gameState.isWin()):
+          return currPots
+        elif (gameState.isLose()):
+          return currPots
+        # find all possible node of curr agent
+        moves = gameState.getLegalActions(index)
+        values = []
+        for move in moves:
+          nextState = gameState.generateSuccessor(index, move)
+          # pacman
+          if (index==0):
+            points = minMax(index+1, depth, nextState)
+          # last ghost
+          elif (index +1 == gameState.getNumAgents()):
+            points = minMax(0, depth+1,nextState)
+          # middld layer ghost
+          else:
+            points = minMax(index+1, depth, nextState)
+          values.append(points)
+        res = 0
+        if (index==0):
+          res = max(values)
+        else:
+          res = min(values)
+        return res
+
+
+
+
+
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -174,7 +224,10 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+
+    def abPruning(self,alpha, beta, depth, gameState):
+      pass
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
