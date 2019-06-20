@@ -76,32 +76,24 @@ class ReflexAgent(Agent):
         newGhostStates = successorGameState.getGhostStates()
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
         "*** YOUR CODE HERE ***"
-        res = -1
 
         #check if the pacman in the ghost location
         i = 0
         while i < len(newGhostStates):
             ghostPos = newGhostStates[i].getPosition()
             if (manhattanDistance(newPos,ghostPos)<=2):
-                return res
+                return -99999
             i+=1
 
         # calculating distance bettween the pacman postion to food
-        nextFood = 99999 
         foodDistance = 0
-        foodL = newFood.asList()
+        foods = newFood.asList()
         i = 0
-        while (i < len(foodL)):
-            currDist = manhattanDistance(newPos,foodL[i])
-            if(currDist<=nextFood):
-              nextFood = currDist
-            foodDistance += currDist
+        while (i < len(foods)):
+            currDist = manhattanDistance(newPos,foods[i])
+            foodDistance += float(1)/float(currDist)
             i+=1
-        if(nextFood==0):
-          res = newPoints^2
-        else:
-          res = 1/nextFood + newPoints + 1/foodDistance 
-        return res
+        return newPoints+foodDistance
 
  
 
@@ -167,7 +159,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         index = 0
         directions = gameState.getLegalActions()
         while (index < len(directions)):
-          nextState = gameState.generatePacmanSuccessor(directions[index])
+          nextState = gameState.generateSuccessor(0,directions[index])
           index+=1
           currValue = self.minMax(1, 0, nextState)
           if(currValue>=maxValue):
@@ -179,37 +171,36 @@ class MinimaxAgent(MultiAgentSearchAgent):
       '''(self, int,int,gameState)-> int
         Return the current best action and move score'''
         # terminal situation: reach end node or depth bound
-        currPots = self.evaluationFunction(gameState)
-        if (self.depth==depth):
-          return currPots,None
-        elif(gameState.isWin()):
-          return currPots,None
-        elif (gameState.isLose()):
-          return currPots,None
+      #res = self.evaluationFunction(gameState)
+        #currPots = self.evaluationFunction(gameState)
+      if (self.depth==depth):
+       	return self.evaluationFunction(gameState)
+      elif(gameState.isWin()):
+        return self.evaluationFunction(gameState)
+      elif (gameState.isLose()):
+        return self.evaluationFunction(gameState)
         # find all possible node of curr agent
-        moves = gameState.getLegalActions(index)
-        value = 0
-        if (player==0):
-          value=-9999999
-
-        for move in moves:
-          nextState = gameState.generateSuccessor(index, move)
+      moves = gameState.getLegalActions(index)
+      values = []
+        
+      for move in moves:
+        nextState = gameState.generateSuccessor(index, move)
           # pacman
-          if (index==0):
-            points = self.minMax(index+1, depth, nextState)
+        if(index==0):
+          points = self.minMax(index+1, depth, nextState)
           # last ghost
-          elif (index +1 == gameState.getNumAgents()):
-            points = self.minMax(0, depth+1,nextState)
+        elif (index +1 == gameState.getNumAgents()):
+          points = self.minMax(0, depth+1,nextState)
           # middld layer ghost
-          else:
-            points = self.minMax(index+1, depth, nextState)
-          values.append(points)
-        res = 0
-        if (index==0):
-          res = max(values)
         else:
-          res = min(values)
-        return res
+          points = self.minMax(index+1, depth, nextState)
+        values.append(points)
+      res = 0
+      if (index==0):
+       	res = max(values)
+      else:
+       	res = min(values)
+      return res
 
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
@@ -229,41 +220,39 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         res = None 
 
         for move in moves:
-          nextState = gameState.generatePacmanSuccessor(move)
+          nextState = gameState.generateSuccessor(0,move)
           currValue = self.abPruning(alpha,beta,0,1, nextState)
           if (currValue > alpha):
             alpha = currValue
             res = move
-          if (beta <= alpha):
-            break
         return res
 
     def abPruning(self,alpha, beta, depth, player, gameState):
-        currPots = self.evaluationFunction(gameState)
+        #currPots = self.evaluationFunction(gameState)
+        #print( 'sd' + str(self.depth)+'\n')
+        #print('depth'+ str(depth) +'\n')
         if (self.depth==depth):
-          return currPots
+          	return self.evaluationFunction(gameState)
         elif(gameState.isWin()):
-          return currPots
+          	return self.evaluationFunction(gameState)
         elif (gameState.isLose()):
-          return currPots
+          	return self.evaluationFunction(gameState)
         # find all possible node of curr agent
         moves = gameState.getLegalActions(player)
         if (player==0):
-          for move in moves:
-            nextState = gameState.generatePacmanSuccessor(move)
-            alpha = max(alpha,self.abPruning(alpha,beta,depth,player+1,nextState))
-            if (alpha>=beta):
-              break
-          return alpha
+          	for move in moves:
+          		nextState = gameState.generateSuccessor(player,move)
+          		alpha = max(alpha,self.abPruning(alpha,beta,depth,player+1,nextState))
+          		if (alpha>=beta):
+          			break
+          	return alpha
         else:
           for move in moves:
             nextState = gameState.generateSuccessor(player,move)
-            if (player+1==gameState.getNumAgents):
-              player = 0
-              depth+=1
+            if (player+1==gameState.getNumAgents()):
+              beta = min(beta,self.abPruning(alpha,beta,depth+1,0,nextState))
             else:
-              player+=1
-            beta = min(beta,self.abPruning(alpha,beta,depth,player,nextState))
+              beta = min(beta,self.abPruning(alpha,beta,depth,player+1,nextState))
             if (beta<=alpha):
               break
           return beta
@@ -286,7 +275,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         res = None
         largest = -999999 
         for move in moves:
-          nextState = gameState.generatePacmanSuccessor(move)
+          nextState = gameState.generateSuccessor(0,move)
           currValue = self.expectMax(1,0,nextState)[0]
           if (currValue > largest):
             largest = currValue
@@ -294,13 +283,13 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         return res
 
     def expectMax(self,player,depth,gameState):
-        currPots = self.evaluationFunction(gameState)
+        #currPots = self.evaluationFunction(gameState)
         if (self.depth==depth):
-          return (currPots,None)
+          return (self.evaluationFunction(gameState),None)
         elif(gameState.isWin()):
-          return (currPots,None)
+          return (self.evaluationFunction(gameState),None)
         elif (gameState.isLose()):
-          return (currPots, None)
+          return (self.evaluationFunction(gameState), None)
 
         moves = gameState.getLegalActions(player)
         value = -99999
@@ -308,21 +297,23 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         if (player>0):
           value = 0
         best_move = None
-        for move in moves:
-          nextState = gameState.generateSuccessor(player,move)
-          if (player==0 or player+1!=gameState.getNumAgents()):
-            player+1
-          else:
-            player = 0
-            depth+=1
-          curr = self.expectMax(player,depth,nextState)
-          if (player==0 and curr[0]>value):
-            value = curr[0]
-            best_move = curr[1]
-          else:
-            value = value+p*curr[0]
-        return (value, best_move)
-          
+        if (player==0):
+          localMax = -999
+          best = None
+          for move in moves:
+            curr = self.expectMax(player+1,depth,gameState.generateSuccessor(player, move))
+            if (curr[0]>value):
+              value = curr[0]
+          return (value,best_move)
+        else:
+          for move in moves:
+            nextState = gameState.generateSuccessor(player,move)
+            if (player+1 == gameState.getNumAgents()):
+              curr = self.expectMax(0, depth+1,nextState)
+            else:
+              curr = self.expectMax(player+1, depth,nextState)
+            value = value+ curr[0]*1.0/float(len(moves))
+          return (value, None)          
 
 
 def betterEvaluationFunction(currentGameState):
