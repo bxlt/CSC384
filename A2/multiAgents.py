@@ -335,6 +335,7 @@ def betterEvaluationFunction(currentGameState):
     pointsFood = 0
     # find the cloest food 
     nextFood = 9999
+
     for food in currFoods.asList():
       curr = manhattanDistance(newPos,food)
       if (curr <nextFood):
@@ -343,22 +344,22 @@ def betterEvaluationFunction(currentGameState):
     if (nextFood !=0):
       pointsFood = 1
     else:  
-      pointsFood= float(1)/float(nextFood)
+      pointsFood= float(5)/float(nextFood)
 
     # search through ghost list, if ghost is scared assign large value, else add the inverse of closest ghost
     ghostPositions = currentGameState.getGhostPositions()
     pointsGhost = 0  
     i = 0
-    while (i<len(ghostPositionsos)):
+    while (i<len(ghostPositions)):
       currDist = manhattanDistance(newPos,ghostPositions[i])
       currT = newScaredTimes[i]
       if (currDist>=1):
-        #ghost normal, move away from it
-        if (currT == 0 or currDist<=currT):
-          pointsGhost+=float(2)/float(currDist)
+        #ghost scared, move toward it
+        if (currT > 0 or currDist<=currT):
+          pointsGhost-=float(10)/float(currDist)
         else:
-          # ghost is scared, move toward it
-          pointsGhost -= float(3)/float(currDist)
+          # ghost normal, move away from it
+          pointsGhost += float(5)/float(currDist)
       else:
         return -999
       i+=1
@@ -367,10 +368,14 @@ def betterEvaluationFunction(currentGameState):
     pointsCap = 0
     capPositions = currentGameState.getCapsules()
     i = 0
-    while (i< len(capPositions))
-      pToCap = manhattanDistance(newPos,capPositions[i])
-      pointsCap += float(1)/float(pToCap)
-    
+    nextCap = 999
+    while (i< len(capPositions)):
+      curr = manhattanDistance(newPos,capPositions[i])
+      if (curr<nextCap):
+        nextCap = curr
+      i+=1
+    pointsCap = float(5)/float(nextCap)
+
     res = currScore+pointsFood-pointsGhost+pointsCap
     return res
 
