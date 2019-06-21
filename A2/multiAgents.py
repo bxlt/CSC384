@@ -359,7 +359,19 @@ def betterEvaluationFunction(currentGameState):
         else:
           # ghost is scared, move toward it
           pointsGhost -= float(3)/float(currDist)
-    res = currScore+pointsFood-pointsGhost
+      else:
+        return -999
+      i+=1
+
+    # search through capsule list, add value to cloest capsule
+    pointsCap = 0
+    capPositions = currentGameState.getCapsules()
+    i = 0
+    while (i< len(capPositions))
+      pToCap = manhattanDistance(newPos,capPositions[i])
+      pointsCap += float(1)/float(pToCap)
+    
+    res = currScore+pointsFood-pointsGhost+pointsCap
     return res
 
 
