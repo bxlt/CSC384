@@ -321,10 +321,47 @@ def betterEvaluationFunction(currentGameState):
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
       evaluation function (question 5).
 
-      DESCRIPTION: <write something here so we know what you did>
+      DESCRIPTION: this function search for the cloest food, closet capsules, run away from gohst
+      if ghost is in scard time, pacman move toward ghost
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    currScore = currentGameState.getScore()
+    newPos = currentGameState.getPacmanPosition()
+    currFoods = currentGameState.getFood()
+
+    newGhostStates = currentGameState.getGhostStates()
+    newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    pointsFood = 0
+    # find the cloest food 
+    nextFood = 9999
+    for food in currFoods.asList():
+      curr = manhattanDistance(newPos,food)
+      if (curr <nextFood):
+        nextFood = curr
+    # if food is next assign large value since this state is good, else add inverse of nextFood 
+    if (nextFood !=0):
+      pointsFood = 1
+    else:  
+      pointsFood= float(1)/float(nextFood)
+
+    # search through ghost list, if ghost is scared assign large value, else add the inverse of closest ghost
+    ghostPositions = currentGameState.getGhostPositions()
+    pointsGhost = 0  
+    i = 0
+    while (i<len(ghostPositionsos)):
+      currDist = manhattanDistance(newPos,ghostPositions[i])
+      currT = newScaredTimes[i]
+      if (currDist>=1):
+        #ghost normal, move away from it
+        if (currT == 0 or currDist<=currT):
+          pointsGhost+=float(2)/float(currDist)
+        else:
+          # ghost is scared, move toward it
+          pointsGhost -= float(3)/float(currDist)
+    res = currScore+pointsFood-pointsGhost
+    return res
+
 
 
 # Abbreviation
