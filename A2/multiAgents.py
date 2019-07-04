@@ -341,10 +341,10 @@ def betterEvaluationFunction(currentGameState):
       if (curr <nextFood):
         nextFood = curr
     # if food is next assign large value since this state is good, else add inverse of nextFood 
-    if (nextFood !=0):
+    if (nextFood < 1):
       pointsFood = 1
     else:  
-      pointsFood= float(5)/float(nextFood)
+      pointsFood= float(1)/float(nextFood)
 
     # search through ghost list, if ghost is scared assign large value, else add the inverse of closest ghost
     ghostPositions = currentGameState.getGhostPositions()
@@ -359,7 +359,7 @@ def betterEvaluationFunction(currentGameState):
           pointsGhost-=float(10)/float(currDist)
         else:
           # ghost normal, move away from it
-          pointsGhost += float(5)/float(currDist)
+          pointsGhost += float(1)/float(currDist)
       else:
         return -999
       i+=1
@@ -374,7 +374,7 @@ def betterEvaluationFunction(currentGameState):
       if (curr<nextCap):
         nextCap = curr
       i+=1
-    pointsCap = float(5)/float(nextCap)
+    pointsCap = float(1)/float(nextCap)
 
     res = currScore+pointsFood-pointsGhost+pointsCap
     return res
