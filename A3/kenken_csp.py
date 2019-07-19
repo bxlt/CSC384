@@ -34,11 +34,13 @@ import itertools
 
 def binary_ne_grid(kenken_grid):
     ##IMPLEMENT
+    pass
     
 
 def nary_ad_grid(kenken_grid):
     ##IMPLEMENT 
-    
+    pass
 
 def kenken_csp_model(kenken_grid):
     ##IMPLEMENT
+    pass

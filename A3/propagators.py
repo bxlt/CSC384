@@ -76,14 +76,95 @@ def prop_BT(csp, newVar=None):
                 return False, []
     return True, []
 
+# global value
+path = []
+
+def FCCheck(const, var):
+    res = 0
+    vars = []
+    for i in const.get_scope():
+    	vars.append(i.get_assigned_value())
+
+    j = 0
+    while (j<len(vars)):
+    	if (None==vars[j]):
+    		break
+    	j+=1
+
+    for x in var.cur_domain():
+    	vars[j]=x
+    	if (not const.check(vars)):
+    		if((var,d) not in path):
+    			var.prune_value(x)
+    			path.append((var,x))
+
+    			if (var.cur_domain_size()!=0):
+    				res = 0
+    			else:
+    				res = 1
+    return res
+    
+
 def prop_FC(csp, newVar=None):
     '''Do forward checking. That is check constraints with 
        only one uninstantiated variable. Remember to keep 
        track of all pruned variable,value pairs and return '''
 #IMPLEMENT
+    constraints = []
+    # all var assigned find certain cons
+    if (newVar!=None):
+        constraints = csp.get_cons_with_var(newVar);
+    else:
+        constraints = csp.get_all_cons()
+    i = 0
+    while (i<len(constraints)):
+    	c = constraints[i]
+    	i+=1
+    	if (c.get_n_unasgn()==1):
+    		var = c.get_unasgn_vars()[0]
+    		if (FCCheck(c,var)==1):
+    			return (False, path)
+    return (True,path)
+
 
 def prop_GAC(csp, newVar=None):
     '''Do GAC propagation. If newVar is None we do initial GAC enforce 
        processing all constraints. Otherwise we do GAC enforce with
        constraints containing newVar on GAC Queue'''
 #IMPLEMENT
+    constraints = csp.get_all_cons()
+    queue = []
+    modify = []
+    if (newVar!=None):
+    	constraints = csp.get_cons_with_var(newVar)
+    queue = constraints
+    while len(queue)>0:
+    	con = queue[0]
+    	queue = queue[1:]
+    	variables = con.get_scope()
+    	i = 0
+    	while (i<len(variables)):
+    		var = variables[i]
+    		i+=1
+    		j = 0
+    		doms = var.cur_domain()
+    		while (j<len(doms)):
+    			dom = doms[j]
+    			j+=1
+    			if (not con.has_support(var,dom)):
+    				if ((var,dom)not in modify):
+    					modify.append((var,dom))
+    					var.prune_value(dom)
+    				if (var.cur_domain_size()!=0):
+    					others = csp.get_cons_with_var(var)
+    					k = 0
+    					while (k<len(others)):
+    						if (others[k]not in queue):
+    							queue.append(others[k])
+    						k+=1
+    				else:
+    					queue = []
+    					return (False,modify)
+
+    
+    return True,res
