@@ -36,7 +36,7 @@ def ord_mrv(csp):
     i = 0
     while (i<len(all_vars)):
        curr = all_vars[i]
-       if (curr.domain_size()<min):
+       if (curr.domain_size()<minV):
             res = curr
             minV = curr.domain_size()
        i+=1
@@ -45,33 +45,32 @@ def ord_mrv(csp):
 def val_lcv(csp,var):
     #IMPLEMENT
     res = {}
-    dom = var.curr_domain()
+    dom = var.cur_domain()
     i = 0
     while(i<len(dom)):
-        var.assign(dom[i])
+        currValue = dom[i]
+        var.assign(currValue)
         remain = 0
         cons = csp.get_cons_with_var(var)
         j = 0
-
         while (j< len(cons)):
             k = 0
-            varss = cons[j].get_all_unasgn_vars()
-            
-            while (k<len(values)):
-                currVar = varss[k]
-                currDom = currVar.curr_domain()
+            con = cons[j]
+            unsign = con.get_unasgn_vars()
+            while (k<len(unsign)):
+                currVar = unsign[k]
+                resDom = currVar.cur_domain()
                 l = 0
-
-                while (l<len(currDom)):
-                    if (cons[j].has_support(currVar,currDom[l])):
+                while (l<len(resDom)):
+                    if (con.has_support(currVar,resDom[l]) is False):
                         remain = remain+1
                     l+=1
                 k+=1
             j+=1
-        res[dom[i]] = remain
+        res[currValue] = remain
         var.unassign()
         i+=1
-    if (len(res)==0):
-        return None
-    sorted_res = sorted(res.items(),key=operator.itemgetter(1))
+    #print(res)
+    sorted_res = sorted(res,key=res.get)
+    #print(sorted_res)
     return sorted_res

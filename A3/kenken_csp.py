@@ -48,7 +48,7 @@ def binary_ne_grid(kenken_grid):
         level = []
         j = 0
         while(j<len(field)):
-            level.append(Variable("C"+str(i+1)+str(j+1), domain))
+            level.append(Variable("C"+str(i+1)+str(j+1),field))
             legal.append((i+1,j+1))
             j = j+1
         variables.append(level)
