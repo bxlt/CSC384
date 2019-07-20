@@ -39,7 +39,7 @@ def ord_mrv(csp):
        if (curr.domain_size()<min):
             res = curr
             minV = curr.domain_size()
-        i+=1
+       i+=1
     return res
 
 def val_lcv(csp,var):
