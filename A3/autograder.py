@@ -20,7 +20,8 @@ if __name__ == "__main__":
     if test_props:        
         for b in boards:
             print("Solving board")
-            csp, var_array = kenken_csp_model(b)
+            csp,var_array=binary_ne_grid(b)
+            #csp, var_array = kenken_csp_model(b)
             solver = BT(csp)
             print("=======================================================")
             print("FC")
